@@ -5,10 +5,10 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
     class KPG_Gallery {
 
         function __construct(){
-            add_action( 'init', array( $this, 'create_custom_post_type' ), 0 );
+            add_action( 'init', array( $this, 'kpg_create_custom_post_type' ), 0 );
         }
 
-        function create_custom_post_type() {
+        function kpg_create_custom_post_type() {
         
             $labels = array(
                 'name'                => _x( 'Private Gallery', 'Post Type General Name', 'KPG_txt_domain' ),
@@ -42,18 +42,22 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                 'has_archive'         => true,
                 'exclude_from_search' => true,
                 'publicly_queryable'  => false,
-                'capability_type'     => 'page',
+                'rewrite'             => array(
+                    'slug' => 'private_gallery'
+                )
             );
              
-            register_post_type( 'kprivate_gallery', $args );
+            register_post_type( 'kpg_private_gallery', $args );
          
         }
 
-        function page_content() {
+        function kpg_page_content() {
+
+            $this->kpg_save_private_gallery();
             $params = array('post_type' => 'product','post_status'=>'publish');
             $wc_query = new WP_Query($params);
             if ($wc_query->have_posts()){
-                ?>                    
+                ?>
                 <form action="#" method="post">
                     <div class="thumb">
                         <?php while ($wc_query->have_posts()) :  $wc_query->the_post(); ?>
@@ -129,7 +133,31 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                 <?php
             }
         }
- 
+
+        function kpg_save_private_gallery() {
+            global $kpg_links;
+            $post = $_POST;
+
+            if( isset($post['protect_product']) ) {
+
+                $post_title = ( isset($post['private_url']) && !empty($post['private_url']) ) ? $post['private_url'] : '';
+                $protected_products = ( isset($post['private']) && !empty($post['private']) ) ? $post['private'] : '';
+                $protected_password = ( isset($post['user_pass']) && !empty($post['user_pass']) ) ? $post['user_pass'] : '';
+
+                $new_post = array(
+                      'post_author' => get_current_user_id(),
+                      'post_title' => $post_title,
+                      'post_name' => $post_title,
+                      'post_status' => 'publish',
+                      'post_type' => 'kpg_private_gallery'
+                );
+
+                $post_id = wp_insert_post($new_post);
+
+                update_post_meta( $post_id, 'kpg_protected_products', maybe_serialize($protected_products) );
+                update_post_meta( $post_id, 'kpg_protected_password', base64_encode($protected_password) );
+            }
+        }
 
     }
 

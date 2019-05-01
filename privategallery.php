@@ -205,10 +205,10 @@ class kprivategallery {
 		if( isset($_REQUEST['page']) && $_REQUEST['page'] != '' ){
 			switch ( $_REQUEST['page'] ) {
 				case $this->kpg_gallery:
-                    $kpg_gallery->page_content();
+                    $kpg_gallery->kpg_page_content();
 					break;
 				case $this->kpg_links:
-					$kpg_links->page_content();
+					$kpg_links->kpg_page_content();
 					break;
 				default:
 					_e( "Product Listing will be here", KPG_txt_domain );
@@ -232,6 +232,10 @@ class kprivategallery {
 // begin!
 global $kpg;
 $kpg = new kprivategallery();
+
+if( $kpg->kpg_is_activate() && file_exists( KPG_INCLUDES_DIR."kpg_links.php" ) ) {
+    include_once( KPG_INCLUDES_DIR."kpg_links.php" );
+}
 
 if( $kpg->kpg_is_activate() && file_exists( KPG_INCLUDES_DIR."kpg_gallery.php" ) ) {
     include_once( KPG_INCLUDES_DIR."kpg_gallery.php" );

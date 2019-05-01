@@ -48,3 +48,9 @@ jQuery(document).ready(function () {
 });
 
 /**** Set product image popup in private gallery page end ****/
+
+/**** Set links page data table start ****/
+$(document).ready(function() {
+    $('#example').DataTable();
+} );
+/**** Set links page data table end ****/
