@@ -41,7 +41,7 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                 'can_export'          => true,
                 'has_archive'         => true,
                 'exclude_from_search' => true,
-                'publicly_queryable'  => false,
+                'publicly_queryable'  => true,
                 'rewrite'             => array(
                     'slug' => 'private_gallery'
                 )
@@ -58,12 +58,12 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
             $wc_query = new WP_Query($params);
             if ($wc_query->have_posts()){
                 ?>
-                <form action="#" method="post">
+                <form action="#" method="post" id="private_gallery_frm">
                     <div class="thumb">
                         <?php while ($wc_query->have_posts()) :  $wc_query->the_post(); ?>
                             <li style="display: inline-block;margin:10px; position: relative;">     
 
-                                <input style="position: absolute; top: 0; right: -5px" type='checkbox' name='private[]' id="<?php the_id(); ?>" value="<?php the_ID()?>">
+                                <input style="position: absolute; top: 0; right: -5px" type='checkbox' name='private[]' id="<?php the_id(); ?>" value="<?php the_ID()?>" class="private_checkbox">
                                 <div style="border:3px solid #17a2b8; margin-bottom: 5px;"><?php echo the_post_thumbnail('thumbnail');?></div>
 
                                 <label for="<?php the_id(); ?>" class="btn btn-info" style="font-size: 15px" > Select </label>
@@ -87,13 +87,17 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                                             <div class="input-group">
                                                 <input type="text" class="form-control" style="width:30%" readonly="" name="site_url" value="<?php echo site_url()."/product_gallery/";?>">
                                                 <input type="text" style="width:65%" class="form-control" placeholder="Enter Your URL" name="private_url" id="private_url">
+                                                <span class="error-msg error-url"> Please enter URL. </span>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Enter Password</label>
                                             <input type="password" class="form-control" name="user_pass" id="user_pass" id="psw" placeholder="Enter password">
+                                            <span class="error-msg error-password"> Please enter password. </span>
                                         </div>
-                                        <button type="submit" class="btn btn-success btn-block" name="protect_product"><span class="glyphicon glyphicon-off"></span> Protact Product</button>
+                                        <button type="submit" id="protect_product" class="btn btn-success btn-block" name="protect_product">
+                                            <span class="glyphicon glyphicon-off"></span> Protact Product
+                                        </button>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -104,7 +108,7 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                     </div>
                     <!--  Light box End -->
 
-                    <input type="button" name="model_pop" value="Submit Product" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+                    <input type="button" id="submit_product" name="model_pop" value="Submit Product" class="btn btn-info" data-toggle="modal" data-target="#myModal">
                 </form>
 
                 <!-- Image preview Light box Start -->
@@ -154,7 +158,9 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
 
                 $post_id = wp_insert_post($new_post);
 
-                update_post_meta( $post_id, 'kpg_protected_products', maybe_serialize($protected_products) );
+                foreach ($protected_products as $p_key => $product_id) {
+                    update_post_meta( $post_id, 'kpg_protected_products_'.$p_key, $product_id );   
+                }
                 update_post_meta( $post_id, 'kpg_protected_password', base64_encode($protected_password) );
             }
         }

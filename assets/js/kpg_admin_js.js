@@ -49,8 +49,36 @@ jQuery(document).ready(function () {
 
 /**** Set product image popup in private gallery page end ****/
 
-/**** Set links page data table start ****/
+
+
+/**** set validation of submit private gallery start ****/
 $(document).ready(function() {
-    $('#example').DataTable();
+    jQuery("#submit_product").attr('disabled','disabled');
+    $('.private_checkbox').change(function() {
+        if ( jQuery("#private_gallery_frm input:checkbox:checked").length > 0 ) {
+            jQuery("#submit_product").removeAttr('disabled','disabled');
+        } else {
+           jQuery("#submit_product").attr('disabled','disabled');
+        }
+    });
+
+    jQuery("#protect_product").click( function() {
+        if( jQuery("#private_url").val() == '' ) {
+            jQuery(".error-url").show();
+            return false;
+        }
+        if( jQuery("#user_pass").val() == '' ) {
+            jQuery(".error-password").show();
+            return false;
+        }
+    });
+});
+/**** set validation of submit private gallery end ****/
+
+
+
+/**** Set links page data table start ****/
+jQuery(document).ready(function() {
+    jQuery('#example').DataTable();
 } );
 /**** Set links page data table end ****/

@@ -6,3 +6,14 @@
 	margin-top: 15px;
  	margin-bottom: 15px;
 }
+
+.error-msg {
+	color: #ff0000;
+	display: none;
+}
+
+.btn.btn-info.mybtton {
+	color: #fff !important;
+    background-color: #117a8b !important;
+    border-color: #10707f !important;
+}

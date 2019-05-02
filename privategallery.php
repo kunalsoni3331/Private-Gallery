@@ -16,15 +16,13 @@ define( 'KPG_PLUGIN', '/privategallery/');
 // directory define
 define( 'KPG_PLUGIN_DIR', WP_PLUGIN_DIR.KPG_PLUGIN);
 define( 'KPG_INCLUDES_DIR', KPG_PLUGIN_DIR.'includes/' );
-define( 'KPG_LIB_DIR', KPG_PLUGIN_DIR.'lib/' );
+// define( 'KPG_LIB_DIR', KPG_PLUGIN_DIR.'lib/' );
 
 define( 'KPG_ASSETS_DIR', KPG_PLUGIN_DIR.'assets/' );
 define( 'KPG_IMAGE_DIR', KPG_ASSETS_DIR.'image/' );
 define( 'KPG_CSS_DIR', KPG_ASSETS_DIR.'css/' );
 define( 'KPG_JS_DIR', KPG_ASSETS_DIR.'js/' );
-
 define( 'KPG_TEMPLATE_DIR', KPG_PLUGIN_DIR.'templates/' );
-define( 'KPG_TEMP_DIR', KPG_PLUGIN_DIR.'temp_data/' );
 
 // URL define
 define( 'KPG_PLUGIN_URL', WP_PLUGIN_URL.KPG_PLUGIN);
@@ -32,9 +30,7 @@ define( 'KPG_ASSETS_URL', KPG_PLUGIN_URL.'assets/');
 define( 'KPG_IMAGES_URL', KPG_ASSETS_URL.'images/');
 define( 'KPG_CSS_URL', KPG_ASSETS_URL.'css/');
 define( 'KPG_JS_URL', KPG_ASSETS_URL.'js/');
-
 define( 'KPG_TEMPLATE_URL', KPG_PLUGIN_URL.'templates/' );
-define( 'KPG_TEMP_URL', KPG_TEMPLATE_URL.'temp_data/' );
 
 // define text domain
 define( 'KPG_txt_domain', 'kpg_text_domain' );
@@ -191,13 +187,31 @@ class kprivategallery {
     function kpg_front_enqueue_scripts() {
         global $kpg_version;
         // need to check here if its front section than enqueue script
-        // if( $kpg_template_loader->kpg_is_front_page() ) {
-        /*********** register and enqueue styles ***************/
+        // if ( is_singular( 'kpg_private_gallery' )  ) {
 
-            $this->kpg_enqueue_scripts();
+            /*********** register and enqueue styles ***************/
+            wp_register_style( 'kpg_bootstrap_min',  KPG_CSS_URL.'kpg_bootstrap.min.css', false, $kpg_version );
+            wp_register_style( 'kpg_datatable_bootstrap', KPG_CSS_URL.'kpg_dataTables.bootstrap4.min.css', false, $kpg_version );
+            wp_register_style( 'kpg_admin_style_css',  KPG_CSS_URL.'kpg_admin_style.css', false, $kpg_version );
+            wp_enqueue_style( 'kpg_bootstrap_min' );
+            wp_enqueue_style( 'kpg_datatable_bootstrap' );
+            wp_enqueue_style( 'kpg_admin_style_css' );
 
-        // }
-        
+
+			/*********** register and enqueue scripts ***************/
+            echo $this->kpg_admin_msg( 'script' );
+            wp_register_script( 'kpg_jquery_js', KPG_JS_URL.'kpg_jquery-3.3.1.js', 'jQuery', $kpg_version, true );
+			wp_register_script( 'kpg_bootstrap_js', KPG_JS_URL.'kpg_bootstrap.min.js', 'jQuery', $kpg_version, true );
+            wp_register_script( 'kpg_bootstrap_bundle_js', KPG_JS_URL.'kpg_bootstrap.bundle.min.js', 'jQuery', $kpg_version, true );
+            wp_register_script( 'kpg_datatable_js', KPG_JS_URL.'kpg_jquery.dataTables.min.js', 'jQuery', $kpg_version, true );
+            wp_register_script( 'kpg_admin_js', KPG_JS_URL.'kpg_admin_js.js', 'jQuery', $kpg_version, true );
+			wp_enqueue_script( 'jquery' );
+            wp_enqueue_script( 'kpg_bootstrap_js' );
+			wp_enqueue_script( 'kpg_bootstrap_bundle_js' );
+            wp_enqueue_script( 'kpg_datatable_js' );
+            wp_enqueue_script( 'kpg_admin_js' );
+
+        // }        
 	}
 
 	function kpg_route() {
@@ -239,5 +253,9 @@ if( $kpg->kpg_is_activate() && file_exists( KPG_INCLUDES_DIR."kpg_links.php" ) )
 
 if( $kpg->kpg_is_activate() && file_exists( KPG_INCLUDES_DIR."kpg_gallery.php" ) ) {
     include_once( KPG_INCLUDES_DIR."kpg_gallery.php" );
+}
+
+if( $kpg->kpg_is_activate() && file_exists( KPG_INCLUDES_DIR."kpg_front_end.php" ) ) {
+    include_once( KPG_INCLUDES_DIR."kpg_front_end.php" );
 }
 
