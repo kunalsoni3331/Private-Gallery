@@ -17,3 +17,8 @@
     background-color: #117a8b !important;
     border-color: #10707f !important;
 }
+
+.change_password_success_msg,
+.change_password_input {
+	display: none;
+}

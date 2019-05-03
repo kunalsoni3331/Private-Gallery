@@ -6,7 +6,13 @@ if( !class_exists ( 'KPG_Links' ) ) {
 
         function __construct(){
             
+        	add_action( 'wp_ajax_kpg_link_password_update', array( $this, 'kpg_link_password_update_func' ) );
+
         } 
+
+        function kpg_link_password_update_func() {
+        	print_r($_REQUEST);
+        }
 
         function kpg_page_content() {
             
@@ -19,14 +25,29 @@ if( !class_exists ( 'KPG_Links' ) ) {
 			        <thead>
 			            <tr>
 			                <th>Link</th>
-			                <th>Password</th>
+			                <th width="50%">Password</th>
 			            </tr>
 			        </thead>
 			        <tbody>
 			        	<?php while ($wc_query->have_posts()) :  $wc_query->the_post(); ?>
 			        		<tr>
 			        			<td><a href="<?php echo get_permalink(); ?>" target="blank"><?php echo get_permalink(); ?></a></td>
-			        			<td><?php echo base64_decode( get_post_meta( get_the_id(), 'kpg_protected_password', true ) ); ?></td>
+			        			<td>
+			        				<span class="link_field"> 
+			        					<a href="javascript:void(0);" class="kpg_change_passwrod"> Change Password </a> 
+			        				</span>
+			        				<span class="change_password_input">
+			        					<input type="hidden" name="post_id" id="post_id" value="<?php echo get_the_ID(); ?>" />
+			        					<input type="text" name="new_password" id="new_password" value="" />
+			        					&nbsp;&nbsp;
+			        					<a href="javascript:void(0);" class="kpg_link_password_update">Update</a>
+			        					&nbsp;&nbsp;
+			        					<a href="javascript:void(0);" class="kpg_link_cancel">Cancel</a>
+			        				</span>
+			        				<span class="change_password_success_msg">
+			        					<?php _e('Password updated successfully.', KPG_txt_domain); ?>
+			        				</span>
+			        			</td>
 			        		</tr>
 			        	<?php endwhile; ?>
 			        </tbody>

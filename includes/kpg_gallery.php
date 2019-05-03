@@ -161,7 +161,7 @@ if( !class_exists ( 'KPG_Gallery' ) ) {
                 foreach ($protected_products as $p_key => $product_id) {
                     update_post_meta( $post_id, 'kpg_protected_products_'.$p_key, $product_id );   
                 }
-                update_post_meta( $post_id, 'kpg_protected_password', base64_encode($protected_password) );
+                update_post_meta( $post_id, 'kpg_protected_password', wp_hash_password($protected_password) );
             }
         }
 

@@ -187,8 +187,8 @@ class kprivategallery {
     function kpg_front_enqueue_scripts() {
         global $kpg_version;
         // need to check here if its front section than enqueue script
-        // if ( is_singular( 'kpg_private_gallery' )  ) {
-
+        if ( is_singular() && strpos( $_SERVER['REQUEST_URI'], 'private_gallery' ) !== false ) {
+        	
             /*********** register and enqueue styles ***************/
             wp_register_style( 'kpg_bootstrap_min',  KPG_CSS_URL.'kpg_bootstrap.min.css', false, $kpg_version );
             wp_register_style( 'kpg_datatable_bootstrap', KPG_CSS_URL.'kpg_dataTables.bootstrap4.min.css', false, $kpg_version );
@@ -211,7 +211,7 @@ class kprivategallery {
             wp_enqueue_script( 'kpg_datatable_js' );
             wp_enqueue_script( 'kpg_admin_js' );
 
-        // }        
+        }        
 	}
 
 	function kpg_route() {

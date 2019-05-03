@@ -15,7 +15,17 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
         }
 
         function kpg_front_end() {
-            global $wp, $wpdb, $wp_query;
+            global $wp, $wpdb, $wp_query, $woocommerce;
+
+            if ( isset( $_POST['private_product'] ) ) {
+                $products = $_POST['private_product'];
+                foreach ( $products as $product_id ) {
+                    WC()->cart->add_to_cart( $product_id );
+                }
+                wp_safe_redirect( $woocommerce->cart->get_cart_url() );
+                exit;
+            }
+
             if( ! is_admin() ) {
                 
                 $table = $wpdb->prefix . 'postmeta';
@@ -52,11 +62,13 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
                         }
                     }
 
+                    $password_error = 0;
                     if( isset($_REQUEST['post_password']) ) {
 
                         foreach ($pg_id as $private_gallery_id) {
                             $password = get_post_meta( $private_gallery_id, 'kpg_protected_password', true );
-                            if( $password == base64_encode( $_REQUEST['post_password'] ) ) {
+
+                            if( wp_check_password( $_REQUEST['post_password'], $password ) ) {
                                 $allowed_term[] = $private_gallery_id;
                                 $cookie_value = implode( '|', $allowed_term );
                                 $expiry_time = time() + $expires_after_days * 30;
@@ -68,6 +80,10 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
                                 
                                 setcookie('pg_data', $cookie_value, time() + (86400 * 30), "/"); 
                                 $display_form = false;
+                                $password_error = 0;
+                                break;
+                            } else {
+                                $password_error = 1;
                             }
                         }
                     }
@@ -88,7 +104,7 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
                         $post_content = '[kpg_display_product product_ids="'.$product_ids.'"]';
                     } else {
                         $post_title = __('Enter Password', KPG_txt_domain);
-                        $post_content = '[kpg_display_password '.$args.']';
+                        $post_content = '[kpg_display_password password_error="'.$password_error.'"]';
                     }
                         
                     $post_id                 = rand( 1000000, 10000000 ); // attempt to avoid clash with a valid post
@@ -158,6 +174,9 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
 
         function kpg_display_password_func( $args=array(), $content = '' ) {
             include( $this->kpg_template_location( "password-private_gallery.php" ) );
+            if( isset($args['password_error']) && !empty($args['password_error']) ) {
+                echo "<script>jQuery('.error_password_wrong').show();</script>";
+            }
         }
 
         function kpg_display_product_func( $args = array(), $content = '' ) {
@@ -166,6 +185,11 @@ if( !class_exists ( 'KPG_Frontend' ) ) {
                 $kpg_post = new WP_Query($params);
                 include( $this->kpg_template_location( "gallery-private_gallery.php" ) );
             }
+            add_action('wp_footer', array($this, 'kpg_display_product_popup_func') );
+        }
+
+        function kpg_display_product_popup_func() {
+            include( $this->kpg_template_location( "gallery-popup-private_gallery.php" ) );
         }
 
         function kpg_template_location ( $template ) {
