@@ -9,7 +9,7 @@ Author URI: https://madhatmedia.net/
 */
 
 
-// plugin definitions
+// plugin definition
 define( 'KPG_PLUGIN_NM', 'Private Gallery');
 define( 'KPG_PLUGIN', '/privategallery/');
 
